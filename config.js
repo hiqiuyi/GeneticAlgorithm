@@ -6,5 +6,5 @@ module.exports = {
     "actions": [0, 1, 2, 3, 4, 5, 6],
     "taskNum": 100,
     "stepNum": 200,
-    "genNum": 500
+    "genNum": 2000
 };
