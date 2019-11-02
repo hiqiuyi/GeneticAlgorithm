@@ -59,6 +59,7 @@ function main() {
     let scoreMap = start(strategyArrAll);
     logger.info('perScore=', math.getMapValueSum(scoreMap) / startStrategyNum);
     logger.info('maxScore=', math.getMaxValue(scoreMap));
+    logger.info('nextGenStrategyArr=', strategyArrAll[math.getKeyOfMaxValue(scoreMap)].join(','));
     logger.info('完成第0代');
 
     for (let i = 1; i <= genNum; i++) {
@@ -68,7 +69,7 @@ function main() {
         scoreMap = start(nextGenStrategyArr);
         logger.info('perScore=', math.getMapValueSum(scoreMap) / startStrategyNum);
         logger.info('maxScore=', math.getMaxValue(scoreMap));
-        logger.info('nextGenStrategyArr=', nextGenStrategyArr.join(','));
+        logger.info('nextGenStrategyArr=', nextGenStrategyArr[math.getKeyOfMaxValue(scoreMap)].join(','));
         logger.info('完成第' + i + '代');
     }
     printGAInfo();
