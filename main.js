@@ -26,7 +26,7 @@ function printGAInfo() {
  * @param strategyArr
  * @returns {number}
  */
-function reRun(strategyArr) {
+function run(strategyArr) {
     let worldArr = world.genEmptyArr(row, column);
     world.initWorld(worldArr);
     return score.getScore(worldArr, conditionArr, strategyArr);
@@ -40,7 +40,7 @@ function start(strategyArrAll) {
     for (let i = 0; i < strategyArrAll.length; i++) {
         let allScore = 0;
         for (let j = 0; j < taskNum; j++) {
-            allScore += reRun(strategyArrAll[i]);
+            allScore += run(strategyArrAll[i]);
         }
 
         // logger.info('i=', i, 'perScore=', allScore / taskNum;);
@@ -75,5 +75,8 @@ function main() {
     printGAInfo();
 }
 
-main();
+module.exports = {
+    'main': main,
+    'run': run
+};
 

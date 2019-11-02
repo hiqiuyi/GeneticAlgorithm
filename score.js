@@ -112,6 +112,13 @@ function doAction(worldArr, actNum) {
 
 }
 
+/**
+ * 获取行动值
+ * @param worldArr 世界数据
+ * @param conditionArr 情形数组
+ * @param strategyArr 策略
+ * @returns {*}
+ */
 function getActionValue(worldArr, conditionArr, strategyArr) {
     // 0=墙，1=空，2=灌
     const x = curPosition[0];
@@ -154,6 +161,13 @@ function getActionValue(worldArr, conditionArr, strategyArr) {
     return strategyArr[conditionIndex];
 }
 
+/**
+ * 获取最后得分
+ * @param worldArr 世界数组
+ * @param conditionArr 情形数组
+ * @param strategyArr 策略数组
+ * @returns {number}
+ */
 function getScore(worldArr, conditionArr, strategyArr){
     curPosition = [0, 0];
     curScore = 0;
@@ -166,6 +180,29 @@ function getScore(worldArr, conditionArr, strategyArr){
     return curScore;
 }
 
+/**
+ * 获取策略的所有行动
+ * @param worldArr 世界数组
+ * @param conditionArr 情形数组
+ * @param strategyArr 策略数组
+ * @returns {any[]}
+ */
+function getActions(worldArr, conditionArr, strategyArr){
+    curPosition = [0, 0];
+    curScore = 0;
+
+    let actionArr = new Array(stepNum);
+    for(let i = 0; i< stepNum; i++){
+        let actionValue = getActionValue(worldArr, conditionArr, strategyArr);
+        doAction(worldArr, actionValue);
+        actionArr[i] = actionValue;
+
+    }
+
+    return actionArr;
+}
+
 module.exports = {
-    'getScore': getScore
+    'getScore': getScore,
+    'getActions': getActions
 };
