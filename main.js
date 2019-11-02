@@ -53,12 +53,12 @@ function start(strategyArrAll) {
 /**
  * 主程序
  */
-function main(){
+function main() {
     logger.info('开始第0代');
     let strategyArrAll = condition.genStrategy(startStrategyNum, conditionNum);
     let scoreMap = start(strategyArrAll);
-    logger.info('perScore=',math.getMapValueSum(scoreMap)/startStrategyNum);
-    logger.info('maxScore=',math.getMaxValue(scoreMap));
+    logger.info('perScore=', math.getMapValueSum(scoreMap) / startStrategyNum);
+    logger.info('maxScore=', math.getMaxValue(scoreMap));
     logger.info('完成第0代');
 
     for (let i = 1; i <= genNum; i++) {
@@ -66,8 +66,9 @@ function main(){
         let nextGenStrategyArr = condition.genNextGeneration(strategyArrAll, scoreMap);
         strategyArrAll = nextGenStrategyArr;
         scoreMap = start(nextGenStrategyArr);
-        logger.info('perScore=',math.getMapValueSum(scoreMap)/startStrategyNum);
-        logger.info('maxScore=',math.getMaxValue(scoreMap));
+        logger.info('perScore=', math.getMapValueSum(scoreMap) / startStrategyNum);
+        logger.info('maxScore=', math.getMaxValue(scoreMap));
+        logger.info('nextGenStrategyArr=', nextGenStrategyArr.join(','));
         logger.info('完成第' + i + '代');
     }
     printGAInfo();

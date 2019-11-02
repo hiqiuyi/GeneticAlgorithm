@@ -4,6 +4,8 @@ const config = require('./config');
 const _ = require('lodash');
 
 const startStrategyNum = config.startStrategyNum;
+const geneMutationNum = config.geneMutationNum;
+const topN = config.topN;
 
 
 // 0=向北移动，1=向南移动，2=向东移动，3=向西移动，4=不动，5=捡罐子，6=随机移动
@@ -109,11 +111,11 @@ function genNextGeneration(strategyArrAll, scoreMap){
         const splitIndex = _.random(0, dad.length - 1);
 
         let newStrategy1 = dad.slice(0, splitIndex).concat(mom.slice(splitIndex));
-        geneMutation(newStrategy1, 10);
+        geneMutation(newStrategy1, geneMutationNum);
         nextGenStrategyArr[2 * i] = newStrategy1;
 
         let newStrategy2 = mom.slice(0, splitIndex).concat(dad.slice(splitIndex));
-        geneMutation(newStrategy2, 10);
+        geneMutation(newStrategy2, geneMutationNum);
         nextGenStrategyArr[2 * i + 1] = newStrategy2;
     }
 
