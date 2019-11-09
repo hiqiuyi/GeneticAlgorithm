@@ -22,17 +22,19 @@
     const game = new Phaser.Game(config);
     const row = 10;
     const column = 10;
-    const worldArr = genWorldArr();
     let strategyArr = [3, 0, 1, 6, 6, 5, 1, 6, 0, 4, 3, 3, 5, 5, 6, 1, 4, 0, 6, 4, 4, 4, 3, 5, 3, 3, 0, 5, 5, 4, 1, 3, 5, 0, 3, 5, 5, 2, 5, 5, 1, 5, 6, 3, 3, 6, 2, 5, 3, 2, 5, 1, 2, 3, 5, 6, 2, 6, 0, 1, 6, 5, 2, 3, 2, 5, 1, 1, 5, 5, 1, 3, 0, 2, 5, 5, 2, 5, 3, 1, 3, 1, 5, 1, 3, 0, 5, 4, 1, 5, 5, 2, 5, 1, 2, 5, 4, 2, 2, 6, 2, 5, 5, 2, 5, 0, 6, 5, 4, 2, 5, 5, 0, 5, 4, 3, 5, 5, 1, 5, 4, 3, 5, 6, 3, 5, 3, 2, 5, 5, 6, 2, 5, 2, 2, 0, 6, 4, 4, 1, 0, 2, 6, 1, 2, 1, 5, 3, 1, 5, 4, 1, 1, 6, 2, 2, 2, 3, 2, 6, 2, 1, 4, 5, 6, 5, 0, 5, 2, 6, 3, 5, 2, 3, 4, 0, 5, 5, 2, 5, 4, 5, 0, 6, 2, 5, 1, 2, 5, 3, 6, 0, 4, 0, 5, 2, 0, 5, 4, 1, 0, 5, 0, 5, 4, 0, 5, 2, 5, 5, 5, 6, 2, 3, 0, 2, 3, 0, 3, 0, 1, 1, 1, 3, 5, 5, 0, 5, 6, 1, 1, 4, 6, 1, 4, 3, 0, 3, 2, 2, 4, 3, 1];
     let curPosition = [0, 0];
     let curScore = 0;
+    let reStartFlag = 0;
 
     Window.GA = {
         'this': null,
         'game': game,
-        'worldArr': worldArr,
+        'worldArr': null,
         'peopleImg': null,
-        'canImgMap': {}
+        'canImgMap': {},
+        'graphicsArr': [],
+        'reStart': null
     };
 
     function preload() {
@@ -45,37 +47,70 @@
         this.load.image('people', 'http://pic.hiqiuyi.cn/blog/20191103/tvJ6LT5bE3XI.png-30px');
     }
 
+    const sleep = m => new Promise(r => setTimeout(r, m));
+
+    /**
+     * 重新开始
+     */
+    function reStart() {
+        console.log('===restart===');
+        reStartFlag = 1;
+        (async () => {
+            await sleep(500);
+
+            for(let i=0; i<Window.GA.graphicsArr.length; i++){
+                Window.GA.graphicsArr[i].clear();
+            }
+            Window.GA.peopleImg.destroy();
+            let canImgMapValues = Object.values(Window.GA.canImgMap);
+            for(let i=0; i<canImgMapValues.length; i++){
+                canImgMapValues[i].destroy();
+            }
+
+            create.call(Window.GA.this);
+        })();
+    }
+
     function create() {
+        reStartFlag = 0;
         Window.GA.this = this;
+        const worldArr = genWorldArr();
+        Window.GA.worldArr = worldArr;
+
+        // 放置按钮
+        if(Window.GA.reStart === null){
+            Window.GA.reStart = Window.GA.this.add.sprite(400, 580, 'apple').setScale(1).setScrollFactor(0).setInteractive();
+            Window.GA.reStart.on('pointerdown', reStart);
+        }
+
+
         // 放置罐
         for (let i = 0; i < Window.GA.worldArr.length; i++) {
             for (let j = 0; j < Window.GA.worldArr[i].length; j++) {
                 if (Window.GA.worldArr[i][j] === 1) {
-                    Window.GA.canImgMap["" + i + "," + j] = this.add.image(175 + i * 50, 75 + j * 50, 'can');
+                    Window.GA.canImgMap["" + i + "," + j] = Window.GA.this.add.image(175 + i * 50, 75 + j * 50, 'can');
                 }
             }
         }
 
-        Window.GA.peopleImg = this.add.image(175, 75, 'people');
+        Window.GA.peopleImg = Window.GA.this.add.image(175, 75, 'people');
 
         // 生成世界格子
         for (let i = 0; i <= 10; i++) {
             let line = new Phaser.Geom.Line(150, 50 + 50 * i, 150 + 50 * 10, 50 + 50 * i);
-            let graphics = this.add.graphics({lineStyle: {width: 2, color: 0x000000}});
-            graphics.strokeLineShape(line);
+            let graphics_row = Window.GA.this.add.graphics({lineStyle: {width: 2, color: 0x000000}});
+            graphics_row.strokeLineShape(line);
+            Window.GA.graphicsArr.push(graphics_row);
 
             line = new Phaser.Geom.Line(150 + 50 * i, 50, 150 + 50 * i, 50 + 50 * 10);
-            graphics = this.add.graphics({lineStyle: {width: 2, color: 0x000000}});
-            graphics.strokeLineShape(line);
+            let graphics_column = Window.GA.this.add.graphics({lineStyle: {width: 2, color: 0x000000}});
+            graphics_column.strokeLineShape(line);
+            Window.GA.graphicsArr.push(graphics_column);
         }
 
-        // destroyImg();
-        // luoBiDoAction(worldArr, )
         let actions = getActions(worldArr, genCondition(), strategyArr);
         console.log('actions', actions);
         console.log('score', curScore);
-
-        const sleep = m => new Promise(r => setTimeout(r, m));
 
         // 0=向北移动，1=向南移动，2=向东移动，3=向西移动，4=不动，5=捡罐子，6=随机移动
         curPosition = [0, 0];
@@ -85,6 +120,9 @@
             for (let i = 0; i < actions.length; i++) {
                 await sleep(100);
                 luoBiDoAction(worldArr, actions[i]);
+                if(reStartFlag === 1){
+                    break;
+                }
             }
         })()
 
@@ -387,15 +425,14 @@
             Window.GA.peopleImg = Window.GA.this.add.image(175 + curX * 50, 75 + curY * 50, 'people');
 
             let line = new Phaser.Geom.Line(175 + x * 50, 75 + y * 50, 175 + curX * 50, 75 + curY * 50);
-            let graphics = Window.GA.this.add.graphics({lineStyle: {width: 1, color: 0xFF5C39}});
-            graphics.strokeLineShape(line);
+            let graphics_path = Window.GA.this.add.graphics({lineStyle: {width: 1, color: 0xFF5C39}});
+            graphics_path.strokeLineShape(line);
 
+            Window.GA.graphicsArr.push(graphics_path);
         }
 
         console.log(x, y)
     }
-
-
 </script>
 
 </body>
